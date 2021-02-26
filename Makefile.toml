@@ -1,0 +1,29 @@
+[env]
+USER = "pi"
+PWD = "somepassword"
+HOSTNAME = "raspberrypi"
+DEST_FOLDER = "/home/pi/programs"
+
+
+[tasks.build]
+command = "cargo"
+args = ["build"]
+
+[tasks.build_release]
+command = "cargo"
+args = ["build", "--release"]
+
+[tasks.debug]
+dependencies = ["build", "transfer"]
+
+[tasks.release]
+dependencies = ["build_release", "transfer_release"]
+
+
+[tasks.transfer]
+command = "sshpass"
+args = ["-p", "${PWD}", "scp", "./target/armv7-unknown-linux-gnueabihf/debug/${CARGO_MAKE_PROJECT_NAME}", "${USER}@${HOSTNAME}:${DEST_FOLDER}"]
+
+[tasks.transfer_release]
+command = "sshpass"
+args = ["-p", "${PWD}", "scp", "./target/armv7-unknown-linux-gnueabihf/release/${CARGO_MAKE_PROJECT_NAME}", "${USER}@${HOSTNAME}:${DEST_FOLDER}"]
